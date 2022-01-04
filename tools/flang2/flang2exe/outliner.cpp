@@ -2678,10 +2678,10 @@ ll_make_outlined_ompaccel_func(SPTR stblk_sptr, SPTR scope_sptr, bool iskernel)
       continue;
     if (SCG(arg_sptr) == SC_PRIVATE)
       continue;
-    if (DESCARRAYG(arg_sptr))
+    // AOCC begin
+    if (DESCARRAYG(arg_sptr) && REFG(arg_sptr))
       continue;
 
-    // AOCC begin
     if (arg_sptr != (SPTR)uplevel->orig_vals[i]) {
       orig_sptr_map[arg_sptr] = (SPTR)uplevel->orig_vals[i];
     }
