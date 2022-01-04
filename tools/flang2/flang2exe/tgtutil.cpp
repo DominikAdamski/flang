@@ -490,7 +490,8 @@ tgt_target_fill_params(SPTR arg_base_sptr, SPTR arg_size_sptr, SPTR args_sptr,
       if(targetinfo->mode == mode_target_update &&
                 targetinfo->symbols[i].map_type & OMP_TGT_MAPTYPE_FROM)
         targetinfo->symbols[i].map_type &= ~(OMP_TGT_MAPTYPE_TO);
-      else
+      //Do not implicit convert map (fromto:) to map (to:) if variable is tagged as (tofrom:)
+      else if (targetinfo->symbols[i].map_type != (OMP_TGT_MAPTYPE_TARGET_PARAM | OMP_TGT_MAPTYPE_TO | OMP_TGT_MAPTYPE_FROM))
       // AOCC End
         targetinfo->symbols[i].map_type = OMP_TGT_MAPTYPE_TARGET_PARAM | OMP_TGT_MAPTYPE_TO; 
       showMinfo = false;
