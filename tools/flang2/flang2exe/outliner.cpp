@@ -333,6 +333,8 @@ get_opc_name(ILM_OP opc)
 }
 static char *
 ll_get_outlined_funcname(int fileno, int lineno, bool isompaccel, ILM_OP opc) {
+  static int oo;
+  oo++;
   char *name;
   const char* name_opc = get_opc_name(opc);
   static unsigned nmLen = 0;
@@ -359,7 +361,7 @@ ll_get_outlined_funcname(int fileno, int lineno, bool isompaccel, ILM_OP opc) {
   }
   nmSize = (3 * maxDigitLen) + 5 + strlen(name_currfunc) + 1;
   name = (char *)malloc(nmSize + strlen(prefix));
-  r = snprintf(name, nmSize, "%s%s_%s_F%dL%d_%d", prefix, name_currfunc, name_opc, fileno, lineno, funcCnt);
+  r = snprintf(name, nmSize, "%s%s_%s_F%dL%d_%d__AD__%d", prefix, name_currfunc, name_opc, fileno, lineno, funcCnt,oo);
   assert(r < nmSize, "buffer overrun", r, ERR_Fatal);
   return name;
 }
@@ -2304,6 +2306,7 @@ ll_has_more_outlined()
 int
 llvm_ilms_rewrite_mode(void)
 {
+  printf("llvm_ilms_rewrite_mode %x %x %x\n",gbl.ilmfil , par_file1, par_file2);
   if (gbl.ilmfil == par_file1 || gbl.ilmfil == par_file2)
     return 1;
   return 0;
@@ -2645,6 +2648,23 @@ ompaccel_copy_arraydescriptors(SPTR arg_sptr)
   VARDSCP(dev_midnum, VARDSCG(org_midnum));
 
   return device_symbol;
+}
+
+SPTR
+ll_make_helper_function_for_kmpc_parallel_51(SPTR scope_sptr, OMPACCEL_TINFO *orig_tinfo)
+{
+  OMPACCEL_TINFO *current_tinfo;
+  SPTR func_sptr;
+  
+  int max_nargs = orig_tinfo->n_symbols + 
+                  orig_tinfo->n_quiet_symbols +
+		  orig_tinfo->n_reduction_symbols;
+  func_sptr = create_target_outlined_func_sptr(scope_sptr, true);
+  current_tinfo = ompaccel_tinfo_create(func_sptr, max_nargs);
+  current_tinfo->symbols = orig_tinfo->symbols;
+  current_tinfo->quiet_symbols = orig_tinfo->quiet_symbols;
+  current_tinfo->n_reduction_symbols = orig_tinfo->n_reduction_symbols;
+  return func_sptr;
 }
 
 SPTR

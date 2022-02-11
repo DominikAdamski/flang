@@ -63,6 +63,8 @@ static int create_ref(SPTR sym, int *pnmex, int basenm, int baseilix,
                       int *pclen, int *pmxlen, int *prestype);
 static int jsr2qjsr(int);
 
+void
+eval_ilm_check_if_skip(int ilmx, int *skip_expand = nullptr, int *process_expanded = nullptr);
 #define DO_PFO ((XBIT(148, 0x1000) && !XBIT(148, 0x4000)) || XBIT(148, 1))
 
 /***************************************************************/
@@ -230,7 +232,12 @@ expand(void)
   int last_ftag = 0;
   int nextftag = 0, nextfindex = 0;
   int last_cpp_branch = 0;
-
+  static int skip_expand;
+  static int process_expanded;
+  if (process_expanded)
+  {
+	  skip_expand = 0;
+  }
   /*
    * NOTE, for an ILM: ilmx is needed to access the ILM_AUX area, ilmp is
    * needed to access the ILM area
@@ -319,8 +326,19 @@ expand(void)
                                    * variable operands */
       if (IM_TRM(opc)) {
         int cur_label = BIH_LABEL(expb.curbih);
-        eval_ilm(ilmx);
-      }
+	if (!skip_expand){
+        eval_ilm_check_if_skip(ilmx, &skip_expand, &process_expanded);
+	printf("opcode %d skip expand %d\n",opc, skip_expand);
+	if (skip_expand) {
+        SPTR sptr1;
+       sptr1	= ll_make_helper_function_for_kmpc_parallel_51((SPTR)0, ompaccel_tinfo_get(gbl.currsub));
+       printf("\n\n SPTRR %d \n\n\n",(int)sptr1);
+	ll_write_ilm_header((int)sptr1, ilmx);
+		restartRewritingILM(ilmx);}
+	}else{
+	  ll_rewrite_ilms(-1, ilmx, len);
+	printf("opcode skipperd %d skip expand %d\n",opc, skip_expand);
+	}}
       else if (flg.smp && len) {
         ll_rewrite_ilms(-1, ilmx, len);
       }
@@ -424,6 +442,11 @@ expand(void)
   } else {
     fihb.nextfindex = fihb.currfindex = 1;
   }
+  if (skip_expand && !process_expanded)
+  {
+	process_expanded = 1;
+  	ll_reset_parfile();
+  }
   return expb.nilms;
 }
 
@@ -483,9 +506,13 @@ static std::vector<int> get_allocated_symbols(OMPACCEL_TINFO *orig_symbols)
   return init_symbols;
 
 }
+void eval_ilm(int ilmx)
+{
+  eval_ilm_check_if_skip(ilmx, nullptr, nullptr);
+}
 
 void
-eval_ilm(int ilmx)
+eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
 {
 
   ILM *ilmpx;
@@ -760,6 +787,13 @@ eval_ilm(int ilmx)
         ilix = ll_make_kmpc_target_deinit(ompaccel_tinfo_get(gbl.currsub)->mode);
         iltb.callfg = 1;
         chk_block(ilix);
+        expb.curilt = addilt(expb.curilt, ad1ili(IL_EXIT, gbl.currsub));
+        BIH_XT(expb.curbih) = 1;
+        BIH_LAST(expb.curbih) = 1;
+        wr_block();
+	if (skip_expand && process_expanded && (*process_expanded == 0))
+	  *skip_expand = 1;
+	 
       }
 
       iltb.callfg = 1;

@@ -114,4 +114,5 @@ void section_create_endblock(SPTR endLabel);
 /// \brief ...
 LLTask* llGetTask(int scope);
 
+int  incrOutlinedCnt(void);
 #endif // EXPSMP_H_

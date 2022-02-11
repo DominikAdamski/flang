@@ -69,7 +69,7 @@ std::list<int> targetVector;
 int HasRequiresUnifiedSharedMemory = false;
 // AOCC End
 
-static int incrOutlinedCnt(void);
+//static int incrOutlinedCnt(void);
 static int decrOutlinedCnt(void);
 static int getOutlinedTemp(char *, int);
 static int isUnnamedCs(int);
@@ -1011,6 +1011,7 @@ exp_smp(ILM_OP opc, ILM *ilmp, int curilm)
   static SPTR single_thread;
   static SPTR in_single;
   static SPTR targetfunc_sptr = SPTR_NULL, targetdevice_func_sptr = SPTR_NULL;
+  static SPTR targetfunc_sptr1 = SPTR_NULL, targetdevice_func_sptr1 = SPTR_NULL;
   static int target_mode = 0;
   SPTR nlower, nupper, nstride;
 #if defined(OMP_OFFLOAD_LLVM) || defined(OMP_OFFLOAD_PGI)
@@ -1021,6 +1022,7 @@ exp_smp(ILM_OP opc, ILM *ilmp, int curilm)
   int sz;
   ISZ_T size, num_elements;
   static int isTargetDevice = 0;
+  static int isTargetDevice1 = 0;
   switch (opc) {
   case IM_BPAR:
   case IM_BPARN:
@@ -1354,6 +1356,8 @@ exp_smp(ILM_OP opc, ILM *ilmp, int curilm)
 #ifdef OMP_OFFLOAD_LLVM
       if (flg.omptarget) {
         exp_ompaccel_btarget(ilmp, curilm, uplevel_sptr, scopeSptr, incrOutlinedCnt, &targetfunc_sptr, &isTargetDevice);
+//	ll_rewrite_ilms(-1, curilm, 0);
+//        exp_ompaccel_btarget(ilmp, curilm, uplevel_sptr, scopeSptr, incrOutlinedCnt, &targetfunc_sptr1, &isTargetDevice1);
         break;
       }
 #endif
@@ -3281,7 +3285,7 @@ decrOutlinedCnt(void)
   return outlinedCnt;
 }
 
-static int
+int
 incrOutlinedCnt(void)
 {
   parCnt++;
