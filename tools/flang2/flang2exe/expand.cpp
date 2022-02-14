@@ -335,6 +335,7 @@ expand(void)
        printf("\n\n SPTRR %d \n\n\n",(int)sptr1);
 	ll_write_ilm_header((int)sptr1, ilmx);
 		restartRewritingILM(ilmx);}
+//	incrOutlinedCnt();
 	}else{
 	  ll_rewrite_ilms(-1, ilmx, len);
 	printf("opcode skipperd %d skip expand %d\n",opc, skip_expand);
@@ -445,7 +446,9 @@ expand(void)
   if (skip_expand && !process_expanded)
   {
 	process_expanded = 1;
-  	ll_reset_parfile();
+	unsetRewritingILM();
+ 	ll_reset_parfile();
+//	decrOutlinedCnt();
   }
   return expb.nilms;
 }
@@ -747,7 +750,8 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
     /* We do not initialize spmd kernel library since we do not use spmd data
      * sharing model. It does extra work and allocates device on-chip memory.
      * */
-    if (XBIT(232, 0x40) && gbl.ompaccel_intarget) {
+    if (XBIT(232, 0x40) && gbl.ompaccel_intarget && !*process_expanded) {
+      //TODO move initialization to separate function
       std::vector<int> allocated_symbols;
       if (is_SPMD_mode(ompaccel_tinfo_get(gbl.currsub)->mode)) {
 	allocated_symbols = get_allocated_symbols(ompaccel_tinfo_get(gbl.currsub));

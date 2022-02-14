@@ -70,7 +70,7 @@ int HasRequiresUnifiedSharedMemory = false;
 // AOCC End
 
 //static int incrOutlinedCnt(void);
-static int decrOutlinedCnt(void);
+//static int decrOutlinedCnt(void);
 static int getOutlinedTemp(char *, int);
 static int isUnnamedCs(int);
 static int addMpUnp(void);
@@ -3274,7 +3274,7 @@ no_pad_func(char *fname)
   NOPADP(sptr, 1);
 }
 
-static int
+int
 decrOutlinedCnt(void)
 {
   outlinedCnt--;
