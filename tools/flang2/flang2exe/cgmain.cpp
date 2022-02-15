@@ -14033,6 +14033,7 @@ process_formal_arguments(LL_ABI_Info *abi)
     /* falls thru */
     case LL_ARG_INDIRECT:
     case LL_ARG_INDIRECT_BUFFERED:
+      //ADAD -> path for original kernel args
       /* For device pointer, we need to home it because we will need to pass it
        * as &&arg(pointer to pointer), make_var_op will call process_sptr later.
        */
@@ -14060,7 +14061,7 @@ process_formal_arguments(LL_ABI_Info *abi)
       /* Other by-value kinds. */
       break;
     }
-
+    //LL_ARG_DIRECT -> expand 3
     /* This op represents the real LLVM argument, not the local variable. */
     arg_op = make_operand();
     arg_op->ot_type = OT_VAR;

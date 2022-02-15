@@ -485,6 +485,7 @@ ll_make_ftn_outlined_params(int func_sptr, int paramct, DTYPE *argtype)
   int sym, dtype;
   char name[MXIDLEN + 2];
   int dpdscp = aux.dpdsc_avl;
+//  static int cnt = 0;
 
   PARAMCTP(func_sptr, paramct);
   DPDSCP(func_sptr, dpdscp);
@@ -495,6 +496,7 @@ ll_make_ftn_outlined_params(int func_sptr, int paramct, DTYPE *argtype)
   while (paramct--) {
     sprintf(name, "%sArg%d", SYMNAME(func_sptr), count++);
     sym = getsymbol(name);
+    printf("Symbol %d name \n", sym, name);
     SCP(sym, SC_DUMMY);
     if (*argtype == DT_CPTR) { /* either i8* or actual type( pass by value). */
       DTYPEP(sym, DT_INT8);
@@ -2659,11 +2661,50 @@ ll_make_helper_function_for_kmpc_parallel_51(SPTR scope_sptr, OMPACCEL_TINFO *or
   int max_nargs = orig_tinfo->n_symbols + 
                   orig_tinfo->n_quiet_symbols +
 		  orig_tinfo->n_reduction_symbols;
+  int func_args_cnt = orig_tinfo->n_symbols + 2; // global_tid, bound_tid + target_info args
+  std::vector<DTYPE> func_args(func_args_cnt);
+  auto it  = func_args.begin();
+  auto *symbols = orig_tinfo->symbols;
+  *it++ = get_type(2, TY_PTR, DT_INT8);//DT_CPTR; // global_tid
+  *it++ = get_type(2, TY_PTR, DT_INT8);//DT_CPTR; // bound_tid
+/*  *it++ = DT_CPTR;
+  *it++ = DT_CPTR;*/
+
+  for (; it != func_args.end(); ++it) {
+	  *it = get_type(2, TY_PTR, DTYPEG(symbols->device_sym));
+	  symbols++;
+  }
+
+  for (int i =0; i < func_args.size(); ++i)
+	  printf("DTYPE %d DT_CPTR %d %d\n",func_args[i], DT_CPTR, i);
   func_sptr = create_target_outlined_func_sptr(scope_sptr, true);
+  DTYPEP(func_sptr, DT_NONE);
+  SCP(func_sptr, SC_EXTERN);
+  STYPEP(func_sptr, ST_ENTRY);
+  //STYPEP(func_sptr, ST_PROC);
+  CCSYMP(func_sptr,
+         1); /* currently we make all CCSYM func varargs in Fortran. */
+  CFUNCP(func_sptr, 1);
+  TASKFNP(func_sptr, FALSE);
+  ISTASKDUPP(func_sptr, FALSE);
+  OUTLINEDP(func_sptr, scope_sptr);
+  FUNCLINEP(func_sptr, gbl.lineno);
+  STYPEP(func_sptr, ST_ENTRY);
+  DTYPEP(func_sptr, DT_VOID_NONE);
+  DEFDP(func_sptr, 1);
+  SCP(func_sptr, SC_STATIC);
+  ADDRTKNP(func_sptr, 1);
+  OMPACCFUNCDEVP(func_sptr, 1);
   current_tinfo = ompaccel_tinfo_create(func_sptr, max_nargs);
   current_tinfo->symbols = orig_tinfo->symbols;
+  current_tinfo->n_symbols = orig_tinfo->n_symbols;
   current_tinfo->quiet_symbols = orig_tinfo->quiet_symbols;
+  current_tinfo->n_quiet_symbols = orig_tinfo->n_quiet_symbols;
   current_tinfo->n_reduction_symbols = orig_tinfo->n_reduction_symbols;
+  printf("funcsptr %d\n", func_sptr);
+//  llMakeFtnOutlinedSignatureTarget(func_sptr, current_tinfo, std::map<SPTR, SPTR> ()); // AOCC
+  ll_make_ftn_outlined_params(func_sptr, func_args_cnt, func_args.data());
+  ll_process_routine_parameters(func_sptr); 
   return func_sptr;
 }
 
