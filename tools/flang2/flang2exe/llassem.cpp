@@ -407,9 +407,7 @@ find_ag(const char *ag_name)
 
   for (gblsym = agb.hashtb[hashval]; gblsym; gblsym = AG_HASHLK(gblsym))
     if (!strcmp(ag_name, AG_NAME(gblsym))){
-	    printf("Found ag %s\n",ag_name);
       return gblsym;}
-	    printf("Not Found ag %s\n",ag_name);
   return SPTR_NULL;
 }
 
@@ -4918,7 +4916,6 @@ llassem_get_objtodbg_list(SPTR sptr)
 char *
 get_llvm_name(SPTR sptr)
 {
-    printf("name 11 %s %d\n",SYMNAME(sptr), sptr);
   static char name[MXIDLN]; /* 1 for null, 3 for extra '_' ,
                              * 4 for @### with mscall
                              */

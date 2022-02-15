@@ -496,7 +496,6 @@ ll_make_ftn_outlined_params(int func_sptr, int paramct, DTYPE *argtype, OMPACCEL
   while (paramct--) {
     sprintf(name, "%sArg%d", SYMNAME(func_sptr), count++);
     sym = getsymbol(name);
-    printf("Symbol %d name \n", sym, name);
     SCP(sym, SC_DUMMY);
     if (*argtype == DT_CPTR) { /* either i8* or actual type( pass by value). */
       DTYPEP(sym, DT_INT8);
@@ -2319,7 +2318,6 @@ ll_has_more_outlined()
 int
 llvm_ilms_rewrite_mode(void)
 {
-  printf("llvm_ilms_rewrite_mode %x %x %x\n",gbl.ilmfil , par_file1, par_file2);
   if (gbl.ilmfil == par_file1 || gbl.ilmfil == par_file2)
     return 1;
   return 0;
@@ -2687,7 +2685,6 @@ ll_make_helper_function_for_kmpc_parallel_51(SPTR scope_sptr, OMPACCEL_TINFO *or
   }
 
   for (int i =0; i < func_args.size(); ++i)
-	  printf("DTYPE %d DT_CPTR %d %d\n",func_args[i], DT_CPTR, i);
   func_sptr = create_target_outlined_func_sptr(scope_sptr, true);
   DTYPEP(func_sptr, DT_NONE);
   SCP(func_sptr, SC_EXTERN);

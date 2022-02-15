@@ -243,12 +243,6 @@ expand(void)
    * needed to access the ILM area
    */
   exp_init();
-  static int cnt;
-  cnt++;
-  if (cnt == 3) {
-	  printf("return !!!\n");
-//	  return 0;
-  }
   /* During expand, we want to generate unique proc ili each time a
    * proc ILM is processed.  The assumption is that the scheduler will
    * cse a proc ili if it appears multiple times in a block. E.g.,
@@ -335,22 +329,17 @@ expand(void)
         int cur_label = BIH_LABEL(expb.curbih);
 	if (process_expanded)
 	{
-		printf("bye %d\n", ompaccel_tinfo_get(gbl.currsub)->n_symbols);
 //		return 0;
 	}
 	if (!skip_expand){
         eval_ilm_check_if_skip(ilmx, &skip_expand, &process_expanded);
-	printf("opcode %d skip expand %d\n",opc, skip_expand);
 	if (skip_expand) {
         SPTR sptr1;
        sptr1	= ll_make_helper_function_for_kmpc_parallel_51((SPTR)0, ompaccel_tinfo_get(gbl.currsub));
-       printf("\n\n SPTRR %d \n\n\n",(int)sptr1);
 	ll_write_ilm_header((int)sptr1, ilmx);
 		restartRewritingILM(ilmx);}
-//	incrOutlinedCnt();
 	}else{
 	  ll_rewrite_ilms(-1, ilmx, len);
-	printf("opcode skipperd %d skip expand %d\n",opc, skip_expand);
 	}}
       else if (flg.smp && len) {
         ll_rewrite_ilms(-1, ilmx, len);

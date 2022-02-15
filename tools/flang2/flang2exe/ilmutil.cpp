@@ -1796,11 +1796,9 @@ rdgilms(int mode)
   gilmb.ilm_base[1] = 0;
   gilmb.ilm_base[2] = 1;
   if (flg.smp && llvm_ilms_rewrite_mode()) {
- 	printf("only 1\n");
        	  gilmb_mode = 0;
   } else
   {
- 	printf("only else\n");
     gilmb_mode = 0;
     rewindilms();
   }
