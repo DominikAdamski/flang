@@ -479,7 +479,9 @@ get_ieee_arith_intrin(char *nm)
 int
 getsymbol(const char *name)
 {
-  return getsym(name, strlen(name));
+  int sym = getsym(name, strlen(name));
+  printf("sym %s id %d\n", name,sym);
+  return sym;
 }
 
 /** \brief Enter symbol with indicated name into symbol table, initialize
@@ -525,6 +527,7 @@ getsym(const char *name, int olength)
   default:
     break;
   }
+  printf("sym %s id %d\n", name,sptr);
   return sptr;
 }
 
