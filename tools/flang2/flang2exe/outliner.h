@@ -247,7 +247,7 @@ void ilm_outlined_pad_ilm(int curilm);
 /**
    \brief ...
  */
-void ll_make_ftn_outlined_params(int func_sptr, int paramct, DTYPE *argtype);
+void ll_make_ftn_outlined_params(int func_sptr, int paramct, DTYPE *argtype, OMPACCEL_TINFO *current_tinfo = nullptr);
 
 /**
    \brief ...

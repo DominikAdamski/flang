@@ -313,7 +313,8 @@ expand(void)
 
       ilmp = (ILM *)(ilmb.ilm_base + ilmx);
       opc = ILM_OPC(ilmp);
-
+      if ((opc == IM_MP_MAP || opc == IM_MP_EMAP) && process_expanded)
+	      continue;
       if (opc == IM_BR) {
         last_cpp_branch = ILM_OPND(ilmp, 1);
       } else if (opc == IM_LABEL) {
@@ -334,8 +335,8 @@ expand(void)
         int cur_label = BIH_LABEL(expb.curbih);
 	if (process_expanded)
 	{
-		printf("bye\n");
-		return 0;
+		printf("bye %d\n", ompaccel_tinfo_get(gbl.currsub)->n_symbols);
+//		return 0;
 	}
 	if (!skip_expand){
         eval_ilm_check_if_skip(ilmx, &skip_expand, &process_expanded);
@@ -397,8 +398,8 @@ expand(void)
     new_callee_scope = 0;
   }
   while (opc != IM_END && opc != IM_ENDF);
-
-  if (DBGBIT(10, 2) && (bihb.stg_avail != 1)) {
+gbl.dbgfil = stderr;
+  if (/*DBGBIT(10, 2) && (bihb.stg_avail != 1)*/1) {
     int bih;
     for (bih = 1; bih != 0; bih = BIH_NEXT(bih)) {
       if (BIH_EN(bih))

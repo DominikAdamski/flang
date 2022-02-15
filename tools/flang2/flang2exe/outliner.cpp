@@ -479,7 +479,7 @@ ll_get_shared_arg(SPTR func_sptr)
 }
 
 void
-ll_make_ftn_outlined_params(int func_sptr, int paramct, DTYPE *argtype)
+ll_make_ftn_outlined_params(int func_sptr, int paramct, DTYPE *argtype, OMPACCEL_TINFO *current_tinfo)
 {
   int count = 0;
   int sym, dtype;
@@ -504,9 +504,20 @@ ll_make_ftn_outlined_params(int func_sptr, int paramct, DTYPE *argtype)
       DTYPEP(sym, *argtype);
       PASSBYVALP(sym, 1);
     }
+
     argtype++;
     STYPEP(sym, ST_VAR);
     aux.dpdsc_base[dpdscp++] = sym;
+    if (current_tinfo)
+    {
+    NEED((current_tinfo->n_symbols + 1), current_tinfo->symbols, OMPACCEL_SYM,
+         current_tinfo->sz_symbols, current_tinfo->sz_symbols * 2);
+    current_tinfo->symbols[current_tinfo->n_symbols].host_sym = SPTR_NULL;
+    current_tinfo->symbols[current_tinfo->n_symbols].device_sym = static_cast<SPTR>(sym);
+    current_tinfo->symbols[current_tinfo->n_symbols].map_type = 0;
+    current_tinfo->symbols[current_tinfo->n_symbols].in_map = 0; // AOCC
+    current_tinfo->n_symbols++;
+    }
   }
 }
 
@@ -2696,14 +2707,13 @@ ll_make_helper_function_for_kmpc_parallel_51(SPTR scope_sptr, OMPACCEL_TINFO *or
   ADDRTKNP(func_sptr, 1);
   OMPACCFUNCDEVP(func_sptr, 1);
   current_tinfo = ompaccel_tinfo_create(func_sptr, max_nargs);
-  current_tinfo->symbols = orig_tinfo->symbols;
-  current_tinfo->n_symbols = orig_tinfo->n_symbols;
-  current_tinfo->quiet_symbols = orig_tinfo->quiet_symbols;
-  current_tinfo->n_quiet_symbols = orig_tinfo->n_quiet_symbols;
-  current_tinfo->n_reduction_symbols = orig_tinfo->n_reduction_symbols;
+//  current_tinfo->n_symbols = orig_tinfo->n_symbols;
+//  current_tinfo->quiet_symbols = orig_tinfo->quiet_symbols;
+//  current_tinfo->n_quiet_symbols = orig_tinfo->n_quiet_symbols;
+//  current_tinfo->n_reduction_symbols = orig_tinfo->n_reduction_symbols;
   printf("funcsptr %d\n", func_sptr);
 //  llMakeFtnOutlinedSignatureTarget(func_sptr, current_tinfo, std::map<SPTR, SPTR> ()); // AOCC
-  ll_make_ftn_outlined_params(func_sptr, func_args_cnt, func_args.data());
+  ll_make_ftn_outlined_params(func_sptr, func_args_cnt, func_args.data(), current_tinfo);
   ll_process_routine_parameters(func_sptr); 
   return func_sptr;
 }
