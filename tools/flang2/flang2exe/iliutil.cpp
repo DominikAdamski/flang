@@ -1475,7 +1475,9 @@ ad_aconk(INT m32, INT l32)
 int
 ad_acon(SPTR sym, ISZ_T val)
 {
-  return ad1ili(IL_ACON, get_acon(sym, val));
+	int tmp = ad1ili(IL_ACON, get_acon(sym, val)); 
+	printf("ad_acon %d sym %d\n",tmp, sym);
+  return tmp;
 }
 
 int
