@@ -2695,7 +2695,7 @@ ll_make_helper_function_for_kmpc_parallel_51(SPTR scope_sptr, OMPACCEL_TINFO *or
   CFUNCP(func_sptr, 1);
   TASKFNP(func_sptr, FALSE);
   ISTASKDUPP(func_sptr, FALSE);
-  OUTLINEDP(func_sptr, scope_sptr);
+  OUTLINEDP(func_sptr, gbl.currsub);
   FUNCLINEP(func_sptr, gbl.lineno);
   STYPEP(func_sptr, ST_ENTRY);
   DTYPEP(func_sptr, DT_VOID_NONE);
