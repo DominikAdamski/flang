@@ -315,6 +315,10 @@ expand(void)
       opc = ILM_OPC(ilmp);
       if ((opc == IM_MP_MAP || opc == IM_MP_EMAP) && process_expanded)
 	      continue;
+      if (process_expanded)
+      {
+	      gbl.ompoutlinedfunc = gbl.currsub;
+      }
       if (opc == IM_BR) {
         last_cpp_branch = ILM_OPND(ilmp, 1);
       } else if (opc == IM_LABEL) {

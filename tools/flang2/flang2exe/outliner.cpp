@@ -1170,6 +1170,7 @@ ll_rewrite_ilms(int lineno, int ilmx, int len)
             /* replace host sptr with device sptrs, PLD keeps sptr in 2nd index
              */
             op1Pld = ILM_OPND(ilmpx, 1);
+	    //replace host sym to device sym 
             ILM_OPND(ilmpx, 2) =
                 ompaccel_tinfo_current_get_devsptr(ILM_SymOPND(ilmpx, 2));
           // AOCC begin
@@ -2698,7 +2699,7 @@ ll_make_helper_function_for_kmpc_parallel_51(SPTR scope_sptr, OMPACCEL_TINFO *or
   CFUNCP(func_sptr, 1);
   TASKFNP(func_sptr, FALSE);
   ISTASKDUPP(func_sptr, FALSE);
-  OUTLINEDP(func_sptr, scope_sptr);
+  OUTLINEDP(func_sptr, gbl.currsub);
   FUNCLINEP(func_sptr, gbl.lineno);
   STYPEP(func_sptr, ST_ENTRY);
   DTYPEP(func_sptr, DT_VOID_NONE);
