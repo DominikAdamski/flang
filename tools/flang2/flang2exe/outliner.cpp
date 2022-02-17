@@ -485,7 +485,7 @@ ll_make_ftn_outlined_params(int func_sptr, int paramct, DTYPE *argtype, OMPACCEL
   int sym, dtype;
   char name[MXIDLEN + 2];
   int dpdscp = aux.dpdsc_avl;
-//  static int cnt = 0;
+  int cnt = 0;
 
   PARAMCTP(func_sptr, paramct);
   DPDSCP(func_sptr, dpdscp);
@@ -512,11 +512,13 @@ ll_make_ftn_outlined_params(int func_sptr, int paramct, DTYPE *argtype, OMPACCEL
     {
     NEED((current_tinfo->n_symbols + 1), current_tinfo->symbols, OMPACCEL_SYM,
          current_tinfo->sz_symbols, current_tinfo->sz_symbols * 2);
-    current_tinfo->symbols[current_tinfo->n_symbols].host_sym = SPTR_NULL;
+    if (cnt >= 2)
+    current_tinfo->symbols[current_tinfo->n_symbols].host_sym = ompaccel_tinfo_get(gbl.currsub)->symbols[cnt-2].device_sym;
     current_tinfo->symbols[current_tinfo->n_symbols].device_sym = static_cast<SPTR>(sym);
     current_tinfo->symbols[current_tinfo->n_symbols].map_type = 0;
     current_tinfo->symbols[current_tinfo->n_symbols].in_map = 0; // AOCC
     current_tinfo->n_symbols++;
+    cnt++;
     }
   }
 }
@@ -2689,11 +2691,7 @@ ll_make_helper_function_for_kmpc_parallel_51(SPTR scope_sptr, OMPACCEL_TINFO *or
 
   for (int i =0; i < func_args.size(); ++i)
 	  printf("DTYPE %d DT_CPTR %d %d\n",func_args[i], DT_CPTR, i);
-  func_sptr = create_target_outlined_func_sptr(scope_sptr, true);
-  DTYPEP(func_sptr, DT_NONE);
-  SCP(func_sptr, SC_EXTERN);
-  STYPEP(func_sptr, ST_ENTRY);
-  //STYPEP(func_sptr, ST_PROC);
+  func_sptr = create_target_outlined_func_sptr(scope_sptr, false);
   CCSYMP(func_sptr,
          1); /* currently we make all CCSYM func varargs in Fortran. */
   CFUNCP(func_sptr, 1);

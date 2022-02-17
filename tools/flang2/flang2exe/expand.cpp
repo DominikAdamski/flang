@@ -724,7 +724,10 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
     break;
 
   case IMTY_MISC: /* miscellaneous  */
-    exp_misc(opcx, ilmpx, ilmx);
+    if (process_expanded && *process_expanded)
+      exp_misc(opcx, ilmpx, ilmx, true);
+    else
+      exp_misc(opcx, ilmpx, ilmx);
     break;
 
   case IMTY_FSTR: /* fortran string */
