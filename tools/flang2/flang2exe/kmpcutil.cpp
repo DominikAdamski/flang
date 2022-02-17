@@ -1749,7 +1749,7 @@ ll_make_kmpc_target_init(OMP_TARGET_MODE mode)
 }
 
 int
-ll_make_kmpc_parallel_51(int global_tid_sptr, std::vector<int> &symbols)
+ll_make_kmpc_parallel_51(int global_tid_sptr, std::vector<int> &symbols, SPTR helper_func)
 {
   static int id;
   int n_symbols = symbols.size();
@@ -1792,7 +1792,7 @@ ll_make_kmpc_parallel_51(int global_tid_sptr, std::vector<int> &symbols)
   args[6] = ad_icon(1);                /* if_expr */
   args[5] = ad_icon(-1);               /* num_threads */
   args[4] = ad_icon(-1);               /* proc_bind */
-  args[3] = gen_null_arg();            /* fn */
+  args[3] = ad_acon(helper_func, 0);
   args[2] = gen_null_arg();            /* wrapper_fn */
   args[1] = ad_acon(captured_vars, 0); /* args */
   args[0] = ad_icon(n_symbols);        /* n_args */

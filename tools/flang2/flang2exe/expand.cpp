@@ -63,7 +63,7 @@ static int create_ref(SPTR sym, int *pnmex, int basenm, int baseilix,
                       int *pclen, int *pmxlen, int *prestype);
 static int jsr2qjsr(int);
 
-void
+SPTR
 eval_ilm_check_if_skip(int ilmx, int *skip_expand = nullptr, int *process_expanded = nullptr);
 #define DO_PFO ((XBIT(148, 0x1000) && !XBIT(148, 0x4000)) || XBIT(148, 1))
 
@@ -343,14 +343,19 @@ expand(void)
 //		return 0;
 	}
 	if (!skip_expand){
-        eval_ilm_check_if_skip(ilmx, &skip_expand, &process_expanded);
+        SPTR sptr1 = eval_ilm_check_if_skip(ilmx, &skip_expand, &process_expanded);
 	printf("opcode %d skip expand %d\n",opc, skip_expand);
 	if (skip_expand) {
-        SPTR sptr1;
+	ll_write_ilm_header((int)sptr1, ilmx);
+		restartRewritingILM(ilmx);
+#if 0
+		SPTR sptr1;
        sptr1	= ll_make_helper_function_for_kmpc_parallel_51((SPTR)0, ompaccel_tinfo_get(gbl.currsub));
        printf("\n\n SPTRR %d \n\n\n",(int)sptr1);
 	ll_write_ilm_header((int)sptr1, ilmx);
-		restartRewritingILM(ilmx);}
+		restartRewritingILM(ilmx);
+#endif
+	}
 //	incrOutlinedCnt();
 	}else{
 	  ll_rewrite_ilms(-1, ilmx, len);
@@ -402,8 +407,8 @@ expand(void)
     new_callee_scope = 0;
   }
   while (opc != IM_END && opc != IM_ENDF);
-gbl.dbgfil = stderr;
-  if (/*DBGBIT(10, 2) && (bihb.stg_avail != 1)*/1) {
+//gbl.dbgfil = stderr;
+  if (DBGBIT(10, 2) && (bihb.stg_avail != 1)) {
     int bih;
     for (bih = 1; bih != 0; bih = BIH_NEXT(bih)) {
       if (BIH_EN(bih))
@@ -530,10 +535,11 @@ void eval_ilm(int ilmx)
   eval_ilm_check_if_skip(ilmx, nullptr, nullptr);
 }
 
-void
+SPTR
 eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
 {
 
+		SPTR sptr1 = SPTR_NULL;
   ILM *ilmpx;
   int noprs,   /* number of operands in the ILM	 */
       ilix,    /* ili index				 */
@@ -557,7 +563,7 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
         /* Set line no for EPARx */
         gbl.lineno = ILM_OPND(ilmpx, 1);
       }
-      return;
+      return sptr1;
     }
   }
 
@@ -589,12 +595,12 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
           }
         } else if (opcx == IM_MP_EREDUCTION) {
           ompaccel_notify_reduction(false);
-          return;
+          return sptr1;
         }
       }
 
       if (ompaccel_is_reduction_region())
-        return;
+        return sptr1;
     }
 #endif
     /*-
@@ -693,7 +699,7 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
     if (IM_I8(opcx))
       ILM_RESTYPE(ilmx) = ILM_ISI8;
 
-    return;
+    return sptr1;
   }
   switch (IM_TYPE(opcx)) { /* special-cased ILM		 */
 
@@ -804,7 +810,9 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
         ilix = ll_make_kmpc_global_thread_num();
         iltb.callfg = 1;
         chk_block(ilix);
-        ilix = ll_make_kmpc_parallel_51(ilix, allocated_symbols);
+       sptr1	= ll_make_helper_function_for_kmpc_parallel_51((SPTR)0, ompaccel_tinfo_get(gbl.currsub));
+       printf("\n\n SPTRR %d \n\n\n",(int)sptr1);
+        ilix = ll_make_kmpc_parallel_51(ilix, allocated_symbols, sptr1);
         iltb.callfg = 1;
         chk_block(ilix);
         ilix = ll_make_kmpc_target_deinit(ompaccel_tinfo_get(gbl.currsub)->mode);
@@ -814,9 +822,9 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
         BIH_XT(expb.curbih) = 1;
         BIH_LAST(expb.curbih) = 1;
         wr_block();
-	if (skip_expand && process_expanded && (*process_expanded == 0))
+	if (skip_expand && process_expanded && (*process_expanded == 0)){
 	  *skip_expand = 1;
-	 
+	} 
       }
 
       iltb.callfg = 1;
@@ -827,6 +835,7 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
 #endif
   if (IM_I8(opcx))
     ILM_RESTYPE(ilmx) = ILM_ISI8;
+  return sptr1;
 }
 
 /***************************************************************/
