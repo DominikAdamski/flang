@@ -361,7 +361,7 @@ ll_get_outlined_funcname(int fileno, int lineno, bool isompaccel, ILM_OP opc) {
   }
   nmSize = (3 * maxDigitLen) + 5 + strlen(name_currfunc) + 1;
   name = (char *)malloc(nmSize + strlen(prefix));
-  r = snprintf(name, nmSize, "%s%s_%s_F%dL%d_%d__AD__%d", prefix, name_currfunc, name_opc, fileno, lineno, funcCnt,oo);
+  r = snprintf(name, nmSize, "%s%s_%s_F%dL%d_%d", prefix, name_currfunc, name_opc, fileno, lineno, funcCnt);
   assert(r < nmSize, "buffer overrun", r, ERR_Fatal);
   return name;
 }
