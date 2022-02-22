@@ -1785,7 +1785,7 @@ ll_make_kmpc_parallel_51(int global_tid_sptr, std::vector<int> &symbols, SPTR he
   arg_types[5] = void_ptr_t;     /* fn */
   arg_types[6] = void_ptr_t;     /* wrapper_fn */
   arg_types[7] = void_ptr_ptr_t; /* args */
-  arg_types[8] = DT_INT;         /* n_args */
+  arg_types[8] = DT_INT8;        /* n_args */
 
   args[8] = gen_null_arg();            /* ident */
   args[7] = global_tid_sptr;           /* global_tid */
