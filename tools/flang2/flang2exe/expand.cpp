@@ -313,8 +313,14 @@ expand(void)
 
       ilmp = (ILM *)(ilmb.ilm_base + ilmx);
       opc = ILM_OPC(ilmp);
+      /* Do not expand map statements for helper function for kmpc_parallel_51 */
       if ((opc == IM_MP_MAP || opc == IM_MP_EMAP) && process_expanded)
 	      continue;
+      /* Stop outlining helper function for end of parallel pragma */
+      if (opc == IM_EPAR && skip_expand && !process_expanded){
+	      ll_write_ilm_end();
+	      skip_expand = 0;
+      }
       if (process_expanded)
       {
 	      gbl.ompoutlinedfunc = gbl.currsub;
