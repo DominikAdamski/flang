@@ -55,6 +55,7 @@
 #include "tgtutil.h"
 #include "kmpcutil.h"
 #include <vector>
+#include <map>
 #endif
 extern int in_extract_inline; /* Bottom-up auto-inlining */
 
@@ -234,14 +235,12 @@ expand(void)
   int last_cpp_branch = 0;
   static int skip_expand;
   static int skip_expand_sptr;
-  static int process_expanded;
-  if (process_expanded)
+  static std::map<int, int> process_expanded_map = std::map<int,int>();
+  auto it = process_expanded_map.find(gbl.currsub);
+  int process_expanded = 0;
+  if (it != process_expanded_map.end())
   {
-	  skip_expand = 0;
-  }
-  if (skip_expand_sptr && skip_expand_sptr ==gbl.currsub)
-  {
-	 process_expanded = 1;
+	  process_expanded = it->second;
   }
   else
   {
@@ -335,11 +334,6 @@ expand(void)
       /* Do not expand map statements for helper function for kmpc_parallel_51 */
       if ((opc == IM_MP_MAP || opc == IM_MP_EMAP) && process_expanded)
 	      continue;
-      /* Stop outlining helper function for end of parallel pragma */
-      if (opc == IM_EPAR && skip_expand && !process_expanded){
-//	      ll_write_ilm_end();
-//	      skip_expand = 0;
-      }
       if (process_expanded)
       {
 	      gbl.ompoutlinedfunc = gbl.currsub;
@@ -372,6 +366,7 @@ expand(void)
 	printf("opcode %d skip expand %d\n",opc, skip_expand);
 	if (skip_expand) {
 		skip_expand_sptr = sptr1;
+		process_expanded_map[skip_expand_sptr] = 1;
 	ll_write_ilm_header((int)sptr1, ilmx);
 		restartRewritingILM(ilmx);
 #if 0
@@ -501,6 +496,7 @@ expand(void)
   {
 //	  process_expanded = 0;
   }
+  skip_expand = 0;
   return expb.nilms;
 }
 
