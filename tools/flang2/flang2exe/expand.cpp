@@ -233,22 +233,41 @@ expand(void)
   int nextftag = 0, nextfindex = 0;
   int last_cpp_branch = 0;
   static int skip_expand;
+  static int skip_expand_sptr;
   static int process_expanded;
   if (process_expanded)
   {
 	  skip_expand = 0;
   }
+  if (skip_expand_sptr && skip_expand_sptr ==gbl.currsub)
+  {
+	 process_expanded = 1;
+  }
+  else
+  {
+	 process_expanded = 0;
+  }
+
   /*
    * NOTE, for an ILM: ilmx is needed to access the ILM_AUX area, ilmp is
    * needed to access the ILM area
    */
   exp_init();
+#if 0
   static int cnt;
   cnt++;
   if (cnt == 3) {
 	  printf("return !!!\n");
-//	  return 0;
+	 skip_expand = 0;
+	 process_expanded = 0;
+//	 return 0;
   }
+  if (cnt == 4) {
+	 skip_expand = 0;
+	 process_expanded = 1;
+  
+  }
+#endif
   /* During expand, we want to generate unique proc ili each time a
    * proc ILM is processed.  The assumption is that the scheduler will
    * cse a proc ili if it appears multiple times in a block. E.g.,
@@ -352,6 +371,7 @@ expand(void)
         SPTR sptr1 = eval_ilm_check_if_skip(ilmx, &skip_expand, &process_expanded);
 	printf("opcode %d skip expand %d\n",opc, skip_expand);
 	if (skip_expand) {
+		skip_expand_sptr = sptr1;
 	ll_write_ilm_header((int)sptr1, ilmx);
 		restartRewritingILM(ilmx);
 #if 0
@@ -476,6 +496,10 @@ expand(void)
 	unsetRewritingILM();
  //	ll_reset_parfile();
 //	decrOutlinedCnt();
+  }
+  if (!skip_expand && process_expanded)
+  {
+//	  process_expanded = 0;
   }
   return expb.nilms;
 }
