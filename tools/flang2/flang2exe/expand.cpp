@@ -318,8 +318,8 @@ expand(void)
 	      continue;
       /* Stop outlining helper function for end of parallel pragma */
       if (opc == IM_EPAR && skip_expand && !process_expanded){
-	      ll_write_ilm_end();
-	      skip_expand = 0;
+//	      ll_write_ilm_end();
+//	      skip_expand = 0;
       }
       if (process_expanded)
       {
@@ -474,7 +474,7 @@ expand(void)
   {
 	process_expanded = 1;
 	unsetRewritingILM();
- 	ll_reset_parfile();
+ //	ll_reset_parfile();
 //	decrOutlinedCnt();
   }
   return expb.nilms;
