@@ -219,7 +219,7 @@ parse_im_file(const ILM *ilmp, int *lineno_out, int *findex_out, int *ftag_out)
 }
 
 /***************************************************************/
-
+static int symbols_ad;
 /** \brief Expand ILMs to ILIs */
 int
 expand(void)
@@ -246,7 +246,7 @@ expand(void)
   {
 	 process_expanded = 0;
   }
-
+   printf("process_expanded %d\n",process_expanded);
   /*
    * NOTE, for an ILM: ilmx is needed to access the ILM_AUX area, ilmp is
    * needed to access the ILM area
@@ -361,6 +361,15 @@ expand(void)
 		printf("bye %d\n", ompaccel_tinfo_get(gbl.currsub)->n_symbols);
 //		return 0;
 	}
+	//450
+	//406
+#if 0
+	if (ompaccel_tinfo_get(gbl.currsub)){
+	//	if (symbols_ad != ompaccel_tinfo_get(450)->n_symbols)
+			symbols_ad = ompaccel_tinfo_get(450)->n_symbols;
+		printf("n_symbolsss %d %d\n", symbols_ad, gbl.currsub);
+	}
+#endif
 	if (!skip_expand){
         SPTR sptr1 = eval_ilm_check_if_skip(ilmx, &skip_expand, &process_expanded);
 	printf("opcode %d skip expand %d\n",opc, skip_expand);
@@ -368,6 +377,7 @@ expand(void)
 		skip_expand_sptr = sptr1;
 		process_expanded_map[skip_expand_sptr] = 1;
 	ll_write_ilm_header((int)sptr1, ilmx);
+//	setRewritingILM();
 		restartRewritingILM(ilmx);
 #if 0
 		SPTR sptr1;
@@ -428,8 +438,8 @@ expand(void)
     new_callee_scope = 0;
   }
   while (opc != IM_END && opc != IM_ENDF);
-//gbl.dbgfil = stderr;
-  if (DBGBIT(10, 2) && (bihb.stg_avail != 1)) {
+gbl.dbgfil = stderr;
+  if (/*DBGBIT(10, 2) && (bihb.stg_avail != 1)*/1) {
     int bih;
     for (bih = 1; bih != 0; bih = BIH_NEXT(bih)) {
       if (BIH_EN(bih))
@@ -527,17 +537,20 @@ eval_ilm_argument1(int opr, ILM *ilmpx, int ilmx)
 
 static std::vector<int> get_allocated_symbols(OMPACCEL_TINFO *orig_symbols)
 {
+//  orig_symbols->n_symbols = 2;
   int num_of_symbols = orig_symbols->n_symbols;
   char allocated_symbol_name[128];
   SPTR allocated_symbol;
   std::vector<int> init_symbols(orig_symbols->n_symbols);
   int store_instr;
   int load_instr;
+  printf("num_of_symbols %d\n",num_of_symbols);
   for (unsigned i = 0; i < num_of_symbols; ++i) {
     snprintf(allocated_symbol_name, sizeof(allocated_symbol_name),
             ".allocated_symbol_%d", i);
     allocated_symbol = getsymbol(allocated_symbol_name);
     STYPEP(allocated_symbol, ST_VAR);
+    printf("symbol name %s\n",SYMNAME(orig_symbols->symbols[i].device_sym));
     DTYPEP(allocated_symbol,
            get_type(2,TY_PTR,DTYPEG(orig_symbols->symbols[i].device_sym)));
     SCP(allocated_symbol, SC_AUTO);
@@ -805,7 +818,8 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
       //TODO move initialization to separate function
       std::vector<int> allocated_symbols;
       if (is_SPMD_mode(ompaccel_tinfo_get(gbl.currsub)->mode)) {
-	allocated_symbols = get_allocated_symbols(ompaccel_tinfo_get(gbl.currsub));
+	  printf("gbl.currsub %d\n",gbl.currsub);
+	  allocated_symbols = get_allocated_symbols(ompaccel_tinfo_get(gbl.currsub));
       }
       ilix = ll_make_kmpc_target_init(ompaccel_tinfo_get(gbl.currsub)->mode);
 
