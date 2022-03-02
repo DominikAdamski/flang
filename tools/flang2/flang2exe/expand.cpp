@@ -252,6 +252,12 @@ expand(void)
    * needed to access the ILM area
    */
   exp_init();
+
+  //set current target info if given target region was already processed
+  if(ompaccel_tinfo_get(gbl.currsub))
+  {
+	  ompaccel_tinfo_current_set(ompaccel_tinfo_get(gbl.currsub));
+  }
 #if 0
   static int cnt;
   cnt++;
