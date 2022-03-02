@@ -4301,7 +4301,7 @@ make_stmt(STMT_Type stmt_type, int ilix, bool deletable, SPTR next_bih_label,
   int alignment;
   INSTR_LIST *Curr_Instr;
 
-  printf(" type: %s ilix: %d", stmt_names[stmt_type], ilix);
+  DBGTRACEIN2(" type: %s ilix: %d", stmt_names[stmt_type], ilix);
 
   curr_stmt_type = stmt_type;
   if (last_stmt_is_branch && stmt_type != STMT_LABEL) {

@@ -496,7 +496,7 @@ ll_make_ftn_outlined_params(int func_sptr, int paramct, DTYPE *argtype, OMPACCEL
   while (paramct--) {
     sprintf(name, "%sArg%d", SYMNAME(func_sptr), count++);
     sym = getsymbol(name);
-    printf("Symbol %d name \n", sym, name);
+//    printf("Symbol %d name \n", sym, name);
     SCP(sym, SC_DUMMY);
     if (*argtype == DT_CPTR) { /* either i8* or actual type( pass by value). */
       DTYPEP(sym, DT_INT8);
@@ -2322,7 +2322,6 @@ ll_has_more_outlined()
 int
 llvm_ilms_rewrite_mode(void)
 {
-  printf("llvm_ilms_rewrite_mode %x %x %x\n",gbl.ilmfil , par_file1, par_file2);
   if (gbl.ilmfil == par_file1 || gbl.ilmfil == par_file2)
     return 1;
   return 0;
@@ -2689,8 +2688,6 @@ ll_make_helper_function_for_kmpc_parallel_51(SPTR scope_sptr, OMPACCEL_TINFO *or
 	  symbols++;
   }
 
-  for (int i =0; i < func_args.size(); ++i)
-	  printf("DTYPE %d DT_CPTR %d %d\n",func_args[i], DT_CPTR, i);
   func_sptr = create_target_outlined_func_sptr(scope_sptr, false);
   CCSYMP(func_sptr,
          1); /* currently we make all CCSYM func varargs in Fortran. */
@@ -2710,7 +2707,7 @@ ll_make_helper_function_for_kmpc_parallel_51(SPTR scope_sptr, OMPACCEL_TINFO *or
 //  current_tinfo->quiet_symbols = orig_tinfo->quiet_symbols;
 //  current_tinfo->n_quiet_symbols = orig_tinfo->n_quiet_symbols;
 //  current_tinfo->n_reduction_symbols = orig_tinfo->n_reduction_symbols;
-  printf("funcsptr %d\n", func_sptr);
+//  printf("funcsptr %d\n", func_sptr);
 //  llMakeFtnOutlinedSignatureTarget(func_sptr, current_tinfo, std::map<SPTR, SPTR> ()); // AOCC
   ll_make_ftn_outlined_params(func_sptr, func_args_cnt, func_args.data(), current_tinfo);
   ll_process_routine_parameters(func_sptr); 

@@ -1534,7 +1534,7 @@ ompaccel_tinfo_current_add_sym(SPTR host_symbol, SPTR device_symbol,
     }
   }
   // AOCC End
-  printf("host sym name %s\n",SYMNAME(host_symbol));
+//  printf("host sym name %s\n",SYMNAME(host_symbol));
   if ((MIDNUMG(host_symbol) && SCG(host_symbol) == SC_BASED)
                             && STYPEG(host_symbol) != ST_MEMBER) { // AOCC
     NEED((current_tinfo->n_quiet_symbols + 1), current_tinfo->quiet_symbols,

@@ -480,7 +480,6 @@ int
 getsymbol(const char *name)
 {
   int sym = getsym(name, strlen(name));
-  printf("sym %s id %d\n", name,sym);
   return sym;
 }
 
@@ -527,7 +526,6 @@ getsym(const char *name, int olength)
   default:
     break;
   }
-  printf("sym %s id %d\n", name,sptr);
   return sptr;
 }
 
