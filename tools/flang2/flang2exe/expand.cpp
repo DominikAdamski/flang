@@ -558,7 +558,7 @@ static std::vector<int> get_allocated_symbols(OMPACCEL_TINFO *orig_symbols)
            get_type(2,TY_PTR,DTYPEG(orig_symbols->symbols[i].device_sym)));
     SCP(allocated_symbol, SC_AUTO);
     store_instr = ad4ili(IL_ST,
-                         ad_acon(orig_symbols->symbols[i].device_sym,0),
+                         ad_acon(orig_symbols->symbols[i].device_sym,0), //last symbol for ptrtoint is incorrect (it is always i64*)
                          ad_acon(allocated_symbol,0),
                          addnme(NT_VAR, allocated_symbol, 0,0),
                          MSZ_I8);
