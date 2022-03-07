@@ -2435,7 +2435,7 @@ llMakeFtnOutlinedSignatureTarget(SPTR func_sptr, OMPACCEL_TINFO *current_tinfo,
   printf("Target mode SPMD %d\n", is_SPMD_mode(current_tinfo->mode));
   for (i = 0; i < current_tinfo->n_symbols; ++i) {
     SPTR sptr = current_tinfo->symbols[i].host_sym;
-    printf("Symbol %s dtype %d passbyval %d\n",SYMNAME(sptr), DTYPEG(sptr), PASSBYVALG(sptr));
+    printf("Symbol %s %d dtype %d passbyval %d\n",SYMNAME(sptr), sptr,DTYPEG(sptr), PASSBYVALG(sptr));
     // AOCC begin
     if (XBIT(232, 0x1)) {
       if (orig_sptr_map.find(sptr) != orig_sptr_map.end()) {
@@ -2454,8 +2454,10 @@ llMakeFtnOutlinedSignatureTarget(SPTR func_sptr, OMPACCEL_TINFO *current_tinfo,
     }
     OMPACCDEVSYMP(sym, TRUE);
     aux.dpdsc_base[dpdscp++] = sym;
-    printf("Sym %s dtype %d passbyval %d\n",SYMNAME(sym), DTYPEG(sym), PASSBYVALG(sym));
+    printf("Sym %s %d dtype %d passbyval %d\n",SYMNAME(sym), sym,DTYPEG(sym), PASSBYVALG(sym));
   }
+  sym = (SPTR)370;
+    printf("Sym %s %d dtype %d passbyval %d\n",SYMNAME(sym), sym,DTYPEG(sym), PASSBYVALG(sym));
   return ignoredsym;
 }
 

@@ -510,6 +510,19 @@ expand(void)
 //	  process_expanded = 0;
   }
   skip_expand = 0;
+  int n_symbols;
+  if (!ompaccel_tinfo_get(gbl.currsub))
+	 n_symbols =0;
+else
+       n_symbols = ompaccel_tinfo_get(gbl.currsub)->n_symbols;//2;//symbols.size();
+  for(int i =0; i < n_symbols; ++i){
+    SPTR sym = ompaccel_tinfo_get(gbl.currsub)->symbols[i].host_sym;
+ printf("Host Sym %s %d dtype %d passbyval %d\n",SYMNAME(sym), sym,DTYPEG(sym), PASSBYVALG(sym));
+    sym = ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym;
+ printf("Device Sym %s %d dtype %d passbyval %d\n",SYMNAME(sym), sym,DTYPEG(sym), PASSBYVALG(sym));
+  }
+  printf("num of symbols %d gbl.currsub %d\n", n_symbols, gbl.currsub);
+
   return expb.nilms;
 }
 

@@ -1753,7 +1753,7 @@ ll_make_kmpc_parallel_51(int global_tid_sptr, std::vector<int> &symbols, SPTR he
 {
   static int id;
   int n_symbols = ompaccel_tinfo_get(gbl.currsub)->n_symbols;//2;//symbols.size();
-  printf("num of symbols %d\n", n_symbols);
+  printf("num of symbols %d gbl.currsub %d\n", n_symbols, gbl.currsub);
   DTYPE arg_types[9];
   DTYPE void_ptr_t = DT_ADDR;//create_dtype_funcprototype();
   DTYPE void_ptr_ptr_t = get_type(2, TY_PTR, void_ptr_t);
