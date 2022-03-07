@@ -260,11 +260,11 @@ expand(void)
 #if 0
   static int cnt;
   cnt++;
-  if (cnt == 3) {
+  if (cnt == 2) {
 	  printf("return !!!\n");
 	 skip_expand = 0;
 	 process_expanded = 0;
-//	 return 0;
+	 return 0;
   }
   if (cnt == 4) {
 	 skip_expand = 0;
@@ -820,9 +820,9 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
     if (XBIT(232, 0x40) && gbl.ompaccel_intarget && !*process_expanded) {
       //TODO move initialization to separate function
       std::vector<int> allocated_symbols;
-      if (is_SPMD_mode(ompaccel_tinfo_get(gbl.currsub)->mode)) {
-	  allocated_symbols = get_allocated_symbols(ompaccel_tinfo_get(gbl.currsub));
-      }
+//      if (is_SPMD_mode(ompaccel_tinfo_get(gbl.currsub)->mode)) {
+//	  allocated_symbols = get_allocated_symbols(ompaccel_tinfo_get(gbl.currsub));
+//      }
       ilix = ll_make_kmpc_target_init(ompaccel_tinfo_get(gbl.currsub)->mode);
 
       /* Generate new control flow for generic kernel */

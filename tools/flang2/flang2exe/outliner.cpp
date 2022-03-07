@@ -2432,9 +2432,10 @@ llMakeFtnOutlinedSignatureTarget(SPTR func_sptr, OMPACCEL_TINFO *current_tinfo,
   NEED(aux.dpdsc_avl, aux.dpdsc_base, int, aux.dpdsc_size,
        aux.dpdsc_size + current_tinfo->n_symbols + 100);
 
+  printf("Target mode SPMD %d\n", is_SPMD_mode(current_tinfo->mode));
   for (i = 0; i < current_tinfo->n_symbols; ++i) {
     SPTR sptr = current_tinfo->symbols[i].host_sym;
-
+    printf("Symbol %s dtype %d passbyval %d\n",SYMNAME(sptr), DTYPEG(sptr), PASSBYVALG(sptr));
     // AOCC begin
     if (XBIT(232, 0x1)) {
       if (orig_sptr_map.find(sptr) != orig_sptr_map.end()) {
@@ -2446,8 +2447,14 @@ llMakeFtnOutlinedSignatureTarget(SPTR func_sptr, OMPACCEL_TINFO *current_tinfo,
     sym = ompaccel_create_device_symbol(sptr, count);
     count++;
     current_tinfo->symbols[i].device_sym = sym;
+    if (is_SPMD_mode(current_tinfo->mode))
+    {
+      PASSBYVALP(sym, 1);
+    DTYPEP(sym, get_type(2, TY_PTR, DTYPEG(sym)));
+    }
     OMPACCDEVSYMP(sym, TRUE);
     aux.dpdsc_base[dpdscp++] = sym;
+    printf("Sym %s dtype %d passbyval %d\n",SYMNAME(sym), DTYPEG(sym), PASSBYVALG(sym));
   }
   return ignoredsym;
 }
@@ -2684,7 +2691,7 @@ ll_make_helper_function_for_kmpc_parallel_51(SPTR scope_sptr, OMPACCEL_TINFO *or
   *it++ = DT_CPTR;*/
 
   for (; it != func_args.end(); ++it) {
-	  *it = get_type(2, TY_PTR, DTYPEG(symbols->device_sym));
+	  *it = DTYPEG(symbols->device_sym);
 	  symbols++;
   }
 

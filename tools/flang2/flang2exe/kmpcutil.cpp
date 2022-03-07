@@ -1752,7 +1752,8 @@ int
 ll_make_kmpc_parallel_51(int global_tid_sptr, std::vector<int> &symbols, SPTR helper_func)
 {
   static int id;
-  int n_symbols = symbols.size();
+  int n_symbols = ompaccel_tinfo_get(gbl.currsub)->n_symbols;//2;//symbols.size();
+  printf("num of symbols %d\n", n_symbols);
   DTYPE arg_types[9];
   DTYPE void_ptr_t = DT_ADDR;//create_dtype_funcprototype();
   DTYPE void_ptr_ptr_t = get_type(2, TY_PTR, void_ptr_t);
@@ -1768,13 +1769,16 @@ ll_make_kmpc_parallel_51(int global_tid_sptr, std::vector<int> &symbols, SPTR he
                             0,
                             ad_icon(0),
                             FALSE);
-  for (unsigned i = 0; i < symbols.size(); ++i) {
-    ilix = mk_ompaccel_store(symbols[i],
+  for (unsigned i = 0; i < n_symbols; ++i) {
+	  printf("Symbol %s\n",SYMNAME(ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym));
+    ilix = mk_ompaccel_ldsptr(ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym);
+    ilix = mk_ompaccel_store(ilix,
                              DT_INT8,
                              nme_args,
                              ad_acon(captured_vars, i * TARGET_PTRSIZE));
     chk_block(ilix);
   }
+  
 
 //  chk_block(ilix);
   arg_types[0] = DT_CPTR;        /* ident */
