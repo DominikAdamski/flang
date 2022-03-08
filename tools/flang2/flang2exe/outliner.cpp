@@ -496,7 +496,7 @@ ll_make_ftn_outlined_params(int func_sptr, int paramct, DTYPE *argtype, OMPACCEL
   while (paramct--) {
     sprintf(name, "%sArg%d", SYMNAME(func_sptr), count++);
     sym = getsymbol(name);
-//    printf("Symbol %d name \n", sym, name);
+    printf("Symbol %d name %s %d %d\n", sym, name, DTYPEG(sym), DT_CPTR);
     SCP(sym, SC_DUMMY);
     if (*argtype == DT_CPTR) { /* either i8* or actual type( pass by value). */
       DTYPEP(sym, DT_INT8);
