@@ -2452,13 +2452,12 @@ llMakeFtnOutlinedSignatureTarget(SPTR func_sptr, OMPACCEL_TINFO *current_tinfo,
 	    printf("OO %s %d\n",SYMNAME(sym),DTYPEG(sym));
       PASSBYVALP(sym, 1);
     DTYPEP(sym, get_type(2, TY_PTR, DTYPEG(sym)));
-    }
+    }else
+      PASSBYVALP(sym, 0);
     OMPACCDEVSYMP(sym, TRUE);
     aux.dpdsc_base[dpdscp++] = sym;
     printf("Sym %s %d dtype %d passbyval %d\n",SYMNAME(sym), sym,DTYPEG(sym), PASSBYVALG(sym));
   }
-  sym = (SPTR)370;
-    printf("Sym %s %d dtype %d passbyval %d\n",SYMNAME(sym), sym,DTYPEG(sym), PASSBYVALG(sym));
   return ignoredsym;
 }
 
@@ -2688,13 +2687,21 @@ ll_make_helper_function_for_kmpc_parallel_51(SPTR scope_sptr, OMPACCEL_TINFO *or
   std::vector<DTYPE> func_args(func_args_cnt);
   auto it  = func_args.begin();
   auto *symbols = orig_tinfo->symbols;
-  *it++ = get_type(2, TY_PTR, DT_INT8);//DT_CPTR; // global_tid
+  func_args[0] = get_type(2, TY_PTR, DT_INT8);//DT_CPTR; // global_tid
+  func_args[1] = get_type(2, TY_PTR, DT_INT8);//DT_CPTR; // bound_tid
+  *it++ = get_type(2, TY_PTR, DT_INT8);//DT_CPTR; // bound_tid
   *it++ = get_type(2, TY_PTR, DT_INT8);//DT_CPTR; // bound_tid
 /*  *it++ = DT_CPTR;
   *it++ = DT_CPTR;*/
 
-  for (; it != func_args.end(); ++it) {
-	  *it = DTYPEG(symbols->device_sym);
+  for (int k = 2; k < func_args_cnt; k++) {
+	  printf("k %d symbol %s dtype %d\n",k, SYMNAME(symbols->device_sym),DTYPEG(symbols->device_sym));
+	  if (DTYPEG(symbols->device_sym) == DT_INT8 ) {
+
+  func_args[k] = get_type(2, TY_PTR, DT_INT8);
+	  }
+	  else{
+	  func_args[k] = DTYPEG(symbols->device_sym);}
 	  symbols++;
   }
 
