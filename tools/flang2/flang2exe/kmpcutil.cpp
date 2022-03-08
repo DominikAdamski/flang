@@ -1769,13 +1769,25 @@ ll_make_kmpc_parallel_51(int global_tid_sptr, std::vector<int> &symbols, SPTR he
                             0,
                             ad_icon(0),
                             FALSE);
+  int j = 0;
   for (unsigned i = 0; i < n_symbols; ++i) {
 	  printf("Symbol %s\n",SYMNAME(ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym));
+    if (DTYPEG(ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym) == 7)
+    {
+	    printf("KKKK %s\n",SYMNAME(ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym));
+            ilix = mk_ompaccel_store(symbols[j++],
+                             DT_INT8,
+                             nme_args,
+                             ad_acon(captured_vars, i * TARGET_PTRSIZE));
+    }
+    else
+    {
     ilix = mk_ompaccel_ldsptr(ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym);
     ilix = mk_ompaccel_store(ilix,
                              DT_INT8,
                              nme_args,
                              ad_acon(captured_vars, i * TARGET_PTRSIZE));
+    }
     chk_block(ilix);
   }
   

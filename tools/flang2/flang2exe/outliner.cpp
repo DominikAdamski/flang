@@ -2447,8 +2447,9 @@ llMakeFtnOutlinedSignatureTarget(SPTR func_sptr, OMPACCEL_TINFO *current_tinfo,
     sym = ompaccel_create_device_symbol(sptr, count);
     count++;
     current_tinfo->symbols[i].device_sym = sym;
-    if (is_SPMD_mode(current_tinfo->mode))
+    if (is_SPMD_mode(current_tinfo->mode) && DTYPEG(sym) != 7)
     {
+	    printf("OO %s %d\n",SYMNAME(sym),DTYPEG(sym));
       PASSBYVALP(sym, 1);
     DTYPEP(sym, get_type(2, TY_PTR, DTYPEG(sym)));
     }

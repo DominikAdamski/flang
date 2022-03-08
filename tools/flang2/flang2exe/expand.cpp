@@ -557,11 +557,14 @@ static std::vector<int> get_allocated_symbols(OMPACCEL_TINFO *orig_symbols)
   int num_of_symbols = orig_symbols->n_symbols;
   char allocated_symbol_name[128];
   SPTR allocated_symbol;
-  std::vector<int> init_symbols(orig_symbols->n_symbols);
+  std::vector<int> init_symbols{};
   int store_instr;
   int load_instr;
 //  printf("num_of_symbols %d\n",num_of_symbols);
   for (unsigned i = 0; i < num_of_symbols; ++i) {
+	  printf("ALLOC SYM %s %d\n",SYMNAME(orig_symbols->symbols[i].device_sym), DTYPEG(orig_symbols->symbols[i].device_sym));
+	  if (DTYPEG(orig_symbols->symbols[i].device_sym) != 7)
+		  continue;
     snprintf(allocated_symbol_name, sizeof(allocated_symbol_name),
             ".allocated_symbol_%d", i);
     allocated_symbol = getsymbol(allocated_symbol_name);
@@ -579,9 +582,10 @@ static std::vector<int> get_allocated_symbols(OMPACCEL_TINFO *orig_symbols)
     load_instr = mk_ompaccel_ldsptr(allocated_symbol);
     chk_block(load_instr);
 
-    init_symbols[i] = load_instr;
+    init_symbols.push_back(load_instr);
 
   }
+  printf("\n\n\n INIT SYMBOLS %d\n\n\n",init_symbols.size());
   return init_symbols;
 
 }
@@ -833,9 +837,9 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
     if (XBIT(232, 0x40) && gbl.ompaccel_intarget && !*process_expanded) {
       //TODO move initialization to separate function
       std::vector<int> allocated_symbols;
-//      if (is_SPMD_mode(ompaccel_tinfo_get(gbl.currsub)->mode)) {
-//	  allocated_symbols = get_allocated_symbols(ompaccel_tinfo_get(gbl.currsub));
-//      }
+      if (is_SPMD_mode(ompaccel_tinfo_get(gbl.currsub)->mode)) {
+	  allocated_symbols = get_allocated_symbols(ompaccel_tinfo_get(gbl.currsub));
+      }
       ilix = ll_make_kmpc_target_init(ompaccel_tinfo_get(gbl.currsub)->mode);
 
       /* Generate new control flow for generic kernel */
