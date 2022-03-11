@@ -1779,9 +1779,46 @@ ll_make_kmpc_parallel_51(int global_tid_sptr, std::vector<int> &symbols, SPTR he
     else {
       ilix = mk_ompaccel_ldsptr(ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym);
       ilix = mk_ompaccel_store(ilix,
-                               DT_INT8,
+                               DT_ADDR,
                                nme_args,
                                ad_acon(captured_vars, i * TARGET_PTRSIZE));
+      
+#if 0	    
+	    if (i == 0)
+	    {
+      ilix = mk_ompaccel_ldsptr(ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym);
+      printf("ilix 1\n");
+      dump_ili(stderr, 25);
+      dump_ili(stderr, 4);
+      dump_ili(stderr, 2);
+      dump_ili(stderr, ilix);
+      ilix = mk_ompaccel_store(ilix,
+                               DT_ADDR,
+                               nme_args,
+                               ad_acon(captured_vars, i * TARGET_PTRSIZE));
+      printf("ilix 2\n");
+      dump_ili(stderr, 27);
+      dump_ili(stderr, ilix);
+      
+	    }
+	    if (i == 1)
+	    {
+      ilix = mk_ompaccel_ldsptr(ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym);
+      printf("ilix 11\n");
+      dump_ili(stderr, 29);
+      dump_ili(stderr, 5);
+      dump_ili(stderr, 0);
+      dump_ili(stderr, ilix);
+      ilix = mk_ompaccel_store(ilix,
+                               DT_ADDR,
+                               nme_args,
+                               ad_acon(captured_vars, i * TARGET_PTRSIZE));
+      printf("ilix 22\n");
+      dump_ili(stderr, 30);
+      dump_ili(stderr, 31);
+      dump_ili(stderr, ilix);
+	    }
+#endif
     }
     chk_block(ilix);
   }

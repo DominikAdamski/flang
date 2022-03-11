@@ -189,8 +189,16 @@ mk_ompaccel_ldsptr(SPTR sptr)
       else
         return ad_icon(CONVAL2G(sptr));
     } else {
+#if 1
+      	    static int nme;
+      if (!nme)
+	    nme  = addnme(NT_VAR, sptr, 0, 0);
+#else
       int nme = addnme(NT_VAR, sptr, 0, 0);
+#endif
+      printf("nme %d\n",nme);
       int ili = mk_address(sptr);
+      printf("ili %d\n",ili);
       if (ILI_OPC(ili) == IL_LDA)
         nme = ILI_OPND(ili, 2);
       if (_pointer_type(dtype) || DTY(dtype) == TY_ARRAY) {
