@@ -775,9 +775,10 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
       //TODO move initialization to separate function
       std::vector<int> allocated_symbols;
       if (is_SPMD_mode(ompaccel_tinfo_get(gbl.currsub)->mode)) {
-	  allocated_symbols = get_allocated_symbols(ompaccel_tinfo_get(gbl.currsub));
+//	  allocated_symbols = get_allocated_symbols(ompaccel_tinfo_get(gbl.currsub));
       }
       ilix = ll_make_kmpc_target_init(ompaccel_tinfo_get(gbl.currsub)->mode);
+//ILI_OPND(5, 1) = 352;
 
       /* Generate new control flow for generic kernel */
       target_code_lab = getlab();
@@ -807,6 +808,7 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
         iltb.callfg = 1;
         chk_block(ilix);
        sptr1	= ll_make_helper_function_for_kmpc_parallel_51((SPTR)0, ompaccel_tinfo_get(gbl.currsub));
+        allocated_symbols = get_allocated_symbols(ompaccel_tinfo_get(gbl.currsub));
         ilix = ll_make_kmpc_parallel_51(ilix, allocated_symbols, sptr1);
         iltb.callfg = 1;
         chk_block(ilix);

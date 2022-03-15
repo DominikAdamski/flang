@@ -189,7 +189,7 @@ mk_ompaccel_ldsptr(SPTR sptr)
       else
         return ad_icon(CONVAL2G(sptr));
     } else {
-#if 1
+#if 0 
       	    static int nme;
       if (!nme)
 	    nme  = addnme(NT_VAR, sptr, 0, 0);
@@ -197,6 +197,8 @@ mk_ompaccel_ldsptr(SPTR sptr)
       int nme = addnme(NT_VAR, sptr, 0, 0);
 #endif
       printf("nme %d\n",nme);
+      if (nme == 4 || nme == 5)
+	      dump_ili(nme);
       int ili = mk_address(sptr);
       printf("ili %d\n",ili);
       if (ILI_OPC(ili) == IL_LDA)
