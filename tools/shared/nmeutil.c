@@ -336,12 +336,11 @@ add_arrnme(NT_KIND type, SPTR insym, int nm, ISZ_T cnst, int sub, bool inlarr)
   /*
    * NEW ENTRY - add the nme to the nme area and to its hash chain
    */
-  if (/*EXPDBG(10, 256)*/ i ==5 || i ==4)
+  if (EXPDBG(10, 256))
   {  fprintf(stderr,
             "adding nme %d:type = %d sym = %d nm = %d cnst = %" ISZ_PF
             "d sub = %d, inlarr=%d\n",
             i, type, sym, nm, cnst, sub, inlarr);
-  printf("symbol %s\n\n\n",SYMNAME(414)); 
   }int *ptr = NULL;
   NME_TYPE(i) = type;
   NME_INLARR(i) = inlarr;
@@ -349,7 +348,6 @@ add_arrnme(NT_KIND type, SPTR insym, int nm, ISZ_T cnst, int sub, bool inlarr)
   NME_NM(i) = nm;
   NME_CNST(i) = cnst;
   NME_HSHLNK(i) = nmehsh[val];
-  printf("nmehsh %d val %d\n",nmehsh[val],val);
   NME_SUB(i) = sub;
   nmehsh[val] = i;
   return i;

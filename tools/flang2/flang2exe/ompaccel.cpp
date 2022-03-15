@@ -196,11 +196,7 @@ mk_ompaccel_ldsptr(SPTR sptr)
 #else
       int nme = addnme(NT_VAR, sptr, 0, 0);
 #endif
-      printf("nme %d\n",nme);
-      if (nme == 4 || nme == 5)
-	      dump_ili(nme);
       int ili = mk_address(sptr);
-      printf("ili %d\n",ili);
       if (ILI_OPC(ili) == IL_LDA)
         nme = ILI_OPND(ili, 2);
       if (_pointer_type(dtype) || DTY(dtype) == TY_ARRAY) {

@@ -402,7 +402,7 @@ expand(void)
     new_callee_scope = 0;
   }
   while (opc != IM_END && opc != IM_ENDF);
-  if (DBGBIT(10, 2) && (bihb.stg_avail != 1)) {
+  if (/*DBGBIT(10, 2) && (bihb.stg_avail != 1)*/ 0) {
     int bih;
     for (bih = 1; bih != 0; bih = BIH_NEXT(bih)) {
       if (BIH_EN(bih))

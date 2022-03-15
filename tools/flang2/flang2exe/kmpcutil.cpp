@@ -1778,55 +1778,21 @@ ll_make_kmpc_parallel_51(int global_tid_sptr, std::vector<int> &symbols, SPTR he
                                ad_acon(captured_vars, i * TARGET_PTRSIZE));
     }
     else {
-//      ilix = mk_ompaccel_ldsptr(ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym);
-/*      ilix = mk_ompaccel_store(ilix,
-                               DT_ADDR,
-                               nme_args,
-                               ad_acon(captured_vars, i * TARGET_PTRSIZE));
-*/      
-#if 1 
-	    if (i == 0)
-	    {
-      printf("\n\n PREEE ilix 0\n");
       ilix = mk_ompaccel_ldsptr(ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym);
-      printf("ilix 1\n");
-      dump_ili(stderr, 26);
-      dump_ili(stderr, 4);
-      dump_ili(stderr, 2);
-      dump_ili(stderr, ilix);
       ilix = mk_ompaccel_store(ilix,
                                DT_ADDR,
                                nme_args,
                                ad_acon(captured_vars, i * TARGET_PTRSIZE));
-      printf("ilix 2\n");
-      dump_ili(stderr, 27);
-      dump_ili(stderr, ilix);
-      
-	    }
-	    if (i == 1)
-	    {
-      printf("\n\n PREEE ilix 1\n");
-//      dump_ili(stderr, 5);
-//ILI_OPND(5, 1) = 352;
-      printf("\n\n BR \n\n\n");
-//      ilix = mk_ompaccel_ldsptr(ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym);
-      printf("ilix 11\n");
-      printf("SYMNAME %s\n", SYMNAME(352));
-//      dump_ili(stderr, 29);
-//      dump_ili(stderr, 5);
-//      dump_ili(stderr, 2);
-//      dump_ili(stderr, 0);
-//      dump_ili(stderr, ilix);
-      ilix = mk_ompaccel_store(ad_acon(ompaccel_tinfo_get(gbl.currsub)->symbols[0].device_sym, 0),
+      if (i == n_symbols -1)
+      {
+	      chk_block(ilix);
+      	ilix = mk_ompaccel_ldsptr(ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym);
+      ilix = mk_ompaccel_store(ilix,
                                DT_ADDR,
                                nme_args,
                                ad_acon(captured_vars, i * TARGET_PTRSIZE));
-      printf("ilix 22\n");
-      dump_ili(stderr, 30);
-      dump_ili(stderr, 31);
-      dump_ili(stderr, ilix);
-	    }
-#endif
+      }
+    
     }
     chk_block(ilix);
   }
