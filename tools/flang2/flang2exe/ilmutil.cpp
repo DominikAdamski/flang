@@ -2071,3 +2071,13 @@ count_ilms()
   return newnumilms;
 }
 
+int get_gilmb_ilmpos()
+{
+  return gilmb.ilmpos;
+}
+
+void set_gilmb_ilmpos(int val)
+{
+  gilmb.ilmpos = val;
+}
+

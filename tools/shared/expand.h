@@ -357,4 +357,6 @@ void replace_by_zero(ILM_OP opc, ILM *ilmp, int curilm);
  */
 void set_assn(int nme);
 
+bool target_region_contains_reduction();
+
 #endif

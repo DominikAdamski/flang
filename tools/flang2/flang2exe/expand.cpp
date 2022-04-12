@@ -63,6 +63,7 @@ static int efunc(const char *);
 static int create_ref(SPTR sym, int *pnmex, int basenm, int baseilix,
                       int *pclen, int *pmxlen, int *prestype);
 static int jsr2qjsr(int);
+static bool is_reduction_kernel;
 
 SPTR
 eval_ilm_check_if_skip(int ilmx, int *skip_expand = nullptr, int *process_expanded = nullptr);
@@ -218,6 +219,42 @@ parse_im_file(const ILM *ilmp, int *lineno_out, int *findex_out, int *ftag_out)
     *ftag_out = ftag;
 }
 
+bool target_region_contains_reduction()
+{
+  int curr_expb_nilms = expb.nilms;
+  int curr_pos = ilmb.globalilmcount;
+  int curr_ilmpos = get_gilmb_ilmpos();
+  ILM *ilmp;      /* absolute pointer to the ILM */
+  ILM_OP opc;     /* opcode of the ILM		 */
+  int len;
+  do {
+    expb.nilms = rdilms();
+    if (expb.nilms > expb.ilmb.stg_size) {
+      EXP_MORE(expb.ilmb, ILM_AUX, expb.nilms + 100);
+    }
+    for (int ilmx = 0; ilmx < expb.nilms; ilmx += len) {
+      ilmp = (ILM *)(ilmb.ilm_base + ilmx);
+      opc = ILM_OPC(ilmp);
+      len = ilms[opc].oprs + 1; /* length is number of words for the
+                                 * fixed operands and the opcode */
+      if (IM_VAR(opc))
+        len += ILM_OPND(ilmp, 1); /* include the number of
+                                   * variable operands */
+      if (opc == IM_MP_BREDUCTION) {
+	 expb.nilms = curr_expb_nilms;
+	 ilmb.globalilmcount = curr_pos;
+	 set_gilmb_ilmpos(curr_ilmpos);
+         return true;
+      }
+    }
+  }
+  while (opc != IM_ETARGET && opc != IM_END && opc != IM_ENDF);
+  expb.nilms = curr_expb_nilms;
+  ilmb.globalilmcount = curr_pos;
+  set_gilmb_ilmpos(curr_ilmpos);
+  return false;
+}
+
 /***************************************************************/
 /** \brief Expand ILMs to ILIs */
 int
@@ -237,6 +274,7 @@ expand(void)
   static std::map<int, int> process_expanded_map = std::map<int,int>();
   auto it = process_expanded_map.find(gbl.currsub);
   int process_expanded = 0;
+  is_reduction_kernel = false;
 
   // we reset flag because we do not know if we generate initialization
   // function for SPMD kernel (the function with kmpc_parallel_51 call)
@@ -740,9 +778,9 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
 
   case IMTY_MISC: /* miscellaneous  */
     if (process_expanded && *process_expanded)
-      exp_misc(opcx, ilmpx, ilmx, true);
+      exp_misc(opcx, ilmpx, ilmx, true, is_reduction_kernel);
     else
-      exp_misc(opcx, ilmpx, ilmx);
+      exp_misc(opcx, ilmpx, ilmx, false, is_reduction_kernel);
     break;
 
   case IMTY_FSTR: /* fortran string */
@@ -787,6 +825,7 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
     if (XBIT(232, 0x40) && gbl.ompaccel_intarget && !*process_expanded) {
       //TODO move initialization to separate function
       std::vector<int> allocated_symbols;
+      bool reduction_pragma = target_region_contains_reduction();
       if (is_SPMD_mode(ompaccel_tinfo_get(gbl.currsub)->mode)) {
 	  allocated_symbols = get_allocated_symbols(ompaccel_tinfo_get(gbl.currsub));
       }
@@ -814,8 +853,10 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
        * will be located  */
       RFCNTI(target_code_lab);
       exp_label(target_code_lab);
+      if (reduction_pragma)
+        is_reduction_kernel = true;
 
-      if (is_SPMD_mode(ompaccel_tinfo_get(gbl.currsub)->mode)) {
+      if (is_SPMD_mode(ompaccel_tinfo_get(gbl.currsub)->mode) && !reduction_pragma) {
         ilix = ll_make_kmpc_global_thread_num();
         iltb.callfg = 1;
         chk_block(ilix);

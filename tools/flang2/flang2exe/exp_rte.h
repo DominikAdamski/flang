@@ -100,7 +100,11 @@ void exp_cgoto(ILM *ilmp, int curilm);
 /**
    \brief ...
  */
-void exp_end(ILM *ilmp, int curilm, bool is_func, bool process_expanded = false);
+void exp_end(ILM *ilmp,
+             int curilm,
+             bool is_func,
+             bool process_expanded = false,
+             bool is_reduction = false);
 
 /**
    \brief ...

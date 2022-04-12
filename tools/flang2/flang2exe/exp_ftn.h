@@ -53,7 +53,11 @@ void exp_bran(ILM_OP opc, ILM *ilmp, int curilm);
 /**
    \brief ...
  */
-void exp_misc(ILM_OP opc, ILM *ilmp, int curilm, bool process_expanded = false);
+void exp_misc(ILM_OP opc,
+              ILM *ilmp,
+              int curilm,
+              bool process_expanded = false,
+              bool is_reduction_kernel = false);
 
 /**
    \brief ...

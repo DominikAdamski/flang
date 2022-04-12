@@ -4147,7 +4147,11 @@ exp_bran(ILM_OP opc, ILM *ilmp, int curilm)
 /***************************************************************/
 
 void
-exp_misc(ILM_OP opc, ILM *ilmp, int curilm, bool process_expanded)
+exp_misc(ILM_OP opc,
+         ILM *ilmp,
+         int curilm,
+         bool process_expanded,
+         bool is_reduction_kernel)
 {
   int tmp;
   int ilix, listilix;
@@ -4289,11 +4293,11 @@ exp_misc(ILM_OP opc, ILM *ilmp, int curilm, bool process_expanded)
     break;
 
   case IM_ENDF:
-    exp_end(ilmp, curilm, true, process_expanded);
+    exp_end(ilmp, curilm, true, process_expanded, is_reduction_kernel);
     break;
 
   case IM_END:
-    exp_end(ilmp, curilm, false, process_expanded);
+    exp_end(ilmp, curilm, false, process_expanded, is_reduction_kernel);
     break;
 
   case IM_BYVAL:

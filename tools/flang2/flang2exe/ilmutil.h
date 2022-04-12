@@ -248,4 +248,14 @@ void swap_next_gilm(void);
  */
 void wrilms(int linenum);
 
+/**
+   \brief return gbl.ilmpos value
+ */
+int get_gilmb_ilmpos();
+
+/**
+   \brief set gilmb.ilmpos value
+ */
+void set_gilmb_ilmpos(int value);
+
 #endif // ILMUTIL_H_
