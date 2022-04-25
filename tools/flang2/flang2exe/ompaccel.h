@@ -28,6 +28,7 @@
 #include "expand.h"
 #include "kmpcutil.h" // AOCC
 #include <vector>     // AOCC
+#include <set>        // AOCC
 
 /* Find if the func_sptr whether it is a kernel or not. */
 #define IS_OMP_DEVICE_KERNEL(func_sptr) (OMPACCFUNCKERNELG(func_sptr))
@@ -94,6 +95,7 @@ struct _OMPACCEL_TARGET{
   SPTR num_teams;                         /*  Number of teams */ // AOCC
   SPTR num_threads;                       /*  Number of threads */ // AOCC
   int default_map;                        /*  Default map type for current kernel */ //AOCC
+  std::set<SPTR> private_symbols;         /*  Symbols used only in device */ //AOCC 
 };
 
 static bool isOmpaccelRegistered = false;

@@ -626,7 +626,7 @@ mk_ompaccel_mul(int ili1, DTYPE dtype1, int ili2, DTYPE dtype2)
   return ad2ili(opc, ili1, ili2);
 } /* mk_ompaccel_mul */
 
-static SPTR
+SPTR
 mk_ompaccel_getnewccsym(int letter, int n, DTYPE dtype, SC_KIND SCkind,
                         SYMTYPE symtype)
 {
@@ -802,7 +802,7 @@ create_nvvm_sym(const char *name, DTYPE dtype)
 }
 
 // AOCC Begin
-INLINE static SPTR
+ SPTR
 create_amdgcn_sym(const char *name, DTYPE dtype)
 {
   SPTR sptr = getsymbol(name);
@@ -1029,6 +1029,7 @@ ompaccel_tinfo_create(SPTR func_sptr, int max_nargs)
 
   NEW(info, OMPACCEL_TINFO, 1);
   info->func_sptr = func_sptr;
+  info->private_symbols = std::set<SPTR>();
   // AOCC Begin
   // Add function name also. It is possible that the different
   // functions get same sptr (they are in diferent scope). 
@@ -1205,7 +1206,7 @@ ompaccel_create_device_symbol(SPTR sptr, int count)
  * Changed return type from SPTR  to void
  *
  */
-INLINE static void
+void
 // AOCC END
 add_symbol_to_function(SPTR func, SPTR sym)
 {
@@ -1236,7 +1237,7 @@ add_symbol_to_function(SPTR func, SPTR sym)
 std::vector<OMPACCEL_TINFO* > tinfo_vector;
 // AOCC End
 
-INLINE static SPTR
+ SPTR
 get_devsptr(OMPACCEL_TINFO *tinfo, SPTR host_symbol)
 {
   int i;
@@ -1281,6 +1282,7 @@ get_devsptr(OMPACCEL_TINFO *tinfo, SPTR host_symbol)
       return tinfo->symbols[i].device_sym;
     }
   }
+  tinfo->private_symbols.insert(host_symbol);
   return host_symbol;
 }
 
@@ -2758,6 +2760,15 @@ exp_ompaccel_mploop(ILM *ilmp, int curilm)
       ili = ll_make_kmpc_for_static_init(&loop_args);
     // AOCC end
     } else {
+	   // 
+//      for (int i = 0; i < ompaccel_tinfo_get(gbl.currsub)->n_symmbols; i++)
+      printf("n symbols %d n_quiet %d\n",ompaccel_tinfo_get(gbl.currsub)->n_symbols, ompaccel_tinfo_get(gbl.currsub)->n_quiet_symbols);
+      for (int i = 0; i < ompaccel_tinfo_get(gbl.currsub)->n_symbols; i++)
+	      printf("host %s device %s\n",SYMNAME(ompaccel_tinfo_get(gbl.currsub)->symbols[i].host_sym), SYMNAME(ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym));
+      for (int i = 0; i < ompaccel_tinfo_get(gbl.currsub)->n_quiet_symbols; i++)
+	      printf("host %d device %d\n",(ompaccel_tinfo_get(gbl.currsub)->quiet_symbols[i].host_sym), (ompaccel_tinfo_get(gbl.currsub)->quiet_symbols[i].device_sym));
+      for (auto &it : ompaccel_tinfo_get(gbl.currsub)->private_symbols)
+	      printf("private symbols test %s\n",SYMNAME(it));
       ili = ll_make_kmpc_for_static_init_simple_spmd(&loop_args, sched);
     }
     break;

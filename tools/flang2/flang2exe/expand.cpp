@@ -237,7 +237,15 @@ expand(void)
   static std::map<int, int> process_expanded_map = std::map<int,int>();
   auto it = process_expanded_map.find(gbl.currsub);
   int process_expanded = 0;
-
+  if (ompaccel_tinfo_get(gbl.currsub))
+  {
+      printf("n symbols %d n_quiet %d\n",ompaccel_tinfo_get(gbl.currsub)->n_symbols, ompaccel_tinfo_get(gbl.currsub)->n_quiet_symbols);
+      for (int i = 0; i < ompaccel_tinfo_get(gbl.currsub)->n_symbols; i++)
+	      printf("host %s device %s\n",SYMNAME(ompaccel_tinfo_get(gbl.currsub)->symbols[i].host_sym), SYMNAME(ompaccel_tinfo_get(gbl.currsub)->symbols[i].device_sym));
+      for (int i = 0; i < ompaccel_tinfo_get(gbl.currsub)->n_quiet_symbols; i++)
+	      printf("host %d device %d\n",(ompaccel_tinfo_get(gbl.currsub)->quiet_symbols[i].host_sym), (ompaccel_tinfo_get(gbl.currsub)->quiet_symbols[i].device_sym));
+	      printf("host %s device %s\n",SYMNAME((SPTR)365), SYMNAME((SPTR)365));
+  }
   // we reset flag because we do not know if we generate initialization
   // function for SPMD kernel (the function with kmpc_parallel_51 call)
   // or the proper kernel code (the function which is passed as an argument
