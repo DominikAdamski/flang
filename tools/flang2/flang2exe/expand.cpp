@@ -754,7 +754,7 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
     break;
 
   case IMTY_SMP: /* smp ILMs  */
-    exp_smp(opcx, ilmpx, ilmx, skip_expand, process_expanded);
+    exp_smp(opcx, ilmpx, ilmx/*, skip_expand, process_expanded*/);
     break;
 
   default: /* error */
