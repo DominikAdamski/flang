@@ -470,7 +470,7 @@ void ompaccel_msg_info(char *, const char *);
 /**
    \brief Expand ILM and emit code for mploop
  */
-void exp_ompaccel_mploop(ILM *ilmp, int);
+void exp_ompaccel_mploop(ILM *ilmp, int,  int *skip_expand = NULL, int *process_expanded = NULL);
 /**
    \brief Expand ILM and emit code for mploopfini
  */

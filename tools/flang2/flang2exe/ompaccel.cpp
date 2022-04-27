@@ -2687,7 +2687,7 @@ exp_ompaccel_mploopfini(ILM *ilmp, int curilm, int outlinedCnt)
 }
 
 void
-exp_ompaccel_mploop(ILM *ilmp, int curilm)
+exp_ompaccel_mploop(ILM *ilmp, int curilm, int *skip_expand, int *process_expanded)
 {
   SPTR nlower, nupper, nstride;
   int sched, ili;
@@ -2765,10 +2765,10 @@ exp_ompaccel_mploop(ILM *ilmp, int curilm)
       if (mploop_counter != 2)
         ili = ll_make_kmpc_for_static_init_simple_spmd(&loop_args, sched);
       else {
-	std::vector<int> allocated_symbols;
+        std::vector<int> allocated_symbols;
         int ilix = ll_make_kmpc_global_thread_num();
         ilix = ll_make_kmpc_parallel_51(ilix,
-			                allocated_symbols,
+                                        allocated_symbols,
                                         (SPTR)0, /*TODO: replace with wrapper fn ptr */
                                         loop_args.lower,
                                         loop_args.upper);

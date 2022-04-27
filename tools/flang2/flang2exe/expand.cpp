@@ -550,8 +550,9 @@ void eval_ilm(int ilmx)
 SPTR
 eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
 {
+//  printf("Eval ilm %d %d\n",skip_expand != NULL, process_expanded != NULL);
 
-		SPTR sptr1 = SPTR_NULL;
+  SPTR sptr1 = SPTR_NULL;
   ILM *ilmpx;
   int noprs,   /* number of operands in the ILM	 */
       ilix,    /* ili index				 */
@@ -753,7 +754,7 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
     break;
 
   case IMTY_SMP: /* smp ILMs  */
-    exp_smp(opcx, ilmpx, ilmx);
+    exp_smp(opcx, ilmpx, ilmx, skip_expand, process_expanded);
     break;
 
   default: /* error */
