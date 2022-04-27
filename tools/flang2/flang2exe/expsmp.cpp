@@ -965,7 +965,7 @@ _make_mp_push_num_teams(int nteams, int n_limit)
 // AOCC end
 
 void
-exp_smp(ILM_OP opc, ILM *ilmp, int curilm, int *skip_expand, int *process_expanded)
+exp_smp(ILM_OP opc, ILM *ilmp, int curilm)
 {
 #ifdef IM_BPAR
   // AOCC begin

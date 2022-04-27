@@ -101,9 +101,10 @@ void exp_smp_fini(void);
  */
 void exp_smp(ILM_OP opc,
              ILM *ilmp,
-             int curilm,
-             int *skip_expand = NULL,
-             int *process_expanded = NULL);
+             int curilm);
+
+//             int *skip_expand = NULL,
+//             int *process_expanded = NULL);
 
 /**
    \brief ...
