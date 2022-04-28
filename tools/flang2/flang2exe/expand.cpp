@@ -240,7 +240,7 @@ expand(void)
 
   //we are at the beginning of pragma expansion
   //make sure that mploop_counter equals to zero
-  reset_mploop_counter();
+//  reset_mploop_counter();
   // we reset flag because we do not know if we generate initialization
   // function for SPMD kernel (the function with kmpc_parallel_51 call)
   // or the proper kernel code (the function which is passed as an argument
@@ -354,7 +354,7 @@ expand(void)
                                    * variable operands */
       if (IM_TRM(opc)) {
         int cur_label = BIH_LABEL(expb.curbih);
-	if (!skip_expand){
+	if (!skip_expand || ILM_OPC((ILM *)(ilmb.ilm_base + ilmx))==IM_MPLOOPFINI){
           SPTR sptr1 = eval_ilm_check_if_skip(ilmx, &skip_expand, &process_expanded);
 	if (skip_expand) {
           skip_expand_sptr = sptr1;
@@ -411,7 +411,7 @@ expand(void)
     new_callee_scope = 0;
   }
   while (opc != IM_END && opc != IM_ENDF);
-  if (DBGBIT(10, 2) && (bihb.stg_avail != 1)) {
+  if (/*DBGBIT(10, 2) && (bihb.stg_avail != 1)*/1) {
     int bih;
     for (bih = 1; bih != 0; bih = BIH_NEXT(bih)) {
       if (BIH_EN(bih))
@@ -550,7 +550,7 @@ void eval_ilm(int ilmx)
 SPTR
 eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
 {
-//  printf("Eval ilm %d %d\n",skip_expand != NULL, process_expanded != NULL);
+  printf("Eval ilm %d %d\n",skip_expand != NULL, process_expanded != NULL);
 
   SPTR sptr1 = SPTR_NULL;
   ILM *ilmpx;
@@ -561,6 +561,7 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
   ILM_OP opcx; /**< ILM opcode of the ILM */
 
   int first_op = 0;
+  static int mp_loop_cnt;
 
   /* Label which denotes blocks generated on the basis of user code */
   SPTR target_code_lab;
@@ -583,7 +584,7 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
   if (EXPDBG(8, 2))
     fprintf(gbl.dbgfil, "---------- eval ilm  %d\n", ilmx);
 
-  if (!ll_ilm_is_rewriting())
+  if (!ll_ilm_is_rewriting() && opcx != IM_MPLOOPFINI)
   {
 #ifdef OMP_OFFLOAD_LLVM
     if (flg.omptarget && gbl.ompaccel_intarget) {
@@ -754,7 +755,23 @@ eval_ilm_check_if_skip(int ilmx, int *skip_expand, int *process_expanded)
     break;
 
   case IMTY_SMP: /* smp ILMs  */
-    exp_smp(opcx, ilmpx, ilmx/*, skip_expand, process_expanded*/);
+    if (opcx == IM_MPLOOP)
+    {
+      mp_loop_cnt++;
+    }
+    exp_smp(opcx, ilmpx, ilmx);
+    if (mp_loop_cnt == 4 )
+	     if (skip_expand && process_expanded && (*process_expanded == 0)){
+		     *skip_expand =1;
+		     printf("start\n");
+setRewritingILM();	     }
+    if (mp_loop_cnt == 4 && opcx == IM_MPLOOPFINI)
+	     if (skip_expand ){
+		     *skip_expand =0;
+		     printf("break\n");
+	     }
+
+
     break;
 
   default: /* error */

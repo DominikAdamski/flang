@@ -10593,8 +10593,9 @@ gen_llvm_expr(int ilix, LL_Type *expected_type)
     operand = gen_llvm_sincos_builtin(ilix);
     break;
   default:
-    DBGTRACE3("### gen_llvm_expr; ilix %d, unknown opcode: %d(%s)\n", ilix, opc,
-              IL_NAME(opc))
+
+    printf("### gen_llvm_expr; ilix %d, unknown opcode: %d(%s)\n", ilix, opc,
+              IL_NAME(opc));
     assert(false, "gen_llvm_expr(): unknown opcode", opc, ERR_Fatal);
     break;
   } /* End of switch(opc) */
